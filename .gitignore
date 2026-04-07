@@ -1,0 +1,8 @@
+node_modules/
+.env
+*.env
+credentials*.json
+data/price-history.json
+.DS_Store
+Thumbs.db
+*.log

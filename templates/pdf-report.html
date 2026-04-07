@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{REPORT_TITLE}}</title>
+  <style>
+    /* Reset & Base */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 11pt;
+      color: #2c3e50;
+      line-height: 1.5;
+      background: #fff;
+    }
+
+    /* Print / PDF Settings */
+    @page {
+      size: A4;
+      margin: 15mm;
+    }
+    .page-break { page-break-before: always; }
+
+    /* Header */
+    .report-header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      color: #fff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+    .report-header h1 {
+      font-size: 26pt;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .report-header .subtitle {
+      font-size: 12pt;
+      opacity: 0.85;
+    }
+    .report-header .meta {
+      display: flex;
+      gap: 24px;
+      margin-top: 16px;
+      font-size: 10pt;
+      opacity: 0.75;
+    }
+
+    /* Stats Bar */
+    .stats-bar {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .stat-card {
+      flex: 1;
+      min-width: 120px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      border: 1px solid #e9ecef;
+    }
+    .stat-card .stat-value {
+      font-size: 20pt;
+      font-weight: 700;
+      color: #1a1a2e;
+    }
+    .stat-card .stat-label {
+      font-size: 9pt;
+      color: #6c757d;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Winner Cards */
+    .winners-section {
+      margin-bottom: 28px;
+    }
+    .winners-section h2 {
+      font-size: 16pt;
+      margin-bottom: 16px;
+      color: #1a1a2e;
+      border-bottom: 2px solid #e9ecef;
+      padding-bottom: 8px;
+    }
+    .winner-cards {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .winner-card {
+      flex: 1;
+      min-width: 150px;
+      padding: 16px;
+      border-radius: 10px;
+      background: #fff;
+      border: 2px solid #e9ecef;
+      text-align: center;
+    }
+    .winner-card.best-overall { border-color: #f5a623; background: #fffdf5; }
+    .winner-card.best-value { border-color: #27ae60; background: #f5fdf8; }
+    .winner-card.best-camera { border-color: #3498db; background: #f5f9fd; }
+    .winner-card.best-battery { border-color: #9b59b6; background: #faf5fd; }
+    .winner-card.budget-pick { border-color: #e67e22; background: #fdf8f5; }
+
+    .winner-card .badge-icon {
+      font-size: 28pt;
+      margin-bottom: 6px;
+    }
+    .winner-card .badge-title {
+      font-size: 8pt;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+      color: #6c757d;
+    }
+    .winner-card .gadget-name {
+      font-size: 11pt;
+      font-weight: 700;
+      margin: 6px 0;
+      color: #1a1a2e;
+    }
+    .winner-card .gadget-price {
+      font-size: 14pt;
+      font-weight: 700;
+    }
+    .winner-card.best-overall .gadget-price { color: #f5a623; }
+    .winner-card.best-value .gadget-price { color: #27ae60; }
+    .winner-card.best-camera .gadget-price { color: #3498db; }
+    .winner-card.best-battery .gadget-price { color: #9b59b6; }
+    .winner-card.budget-pick .gadget-price { color: #e67e22; }
+
+    /* Comparison Table */
+    .comparison-section {
+      margin-bottom: 28px;
+    }
+    .comparison-section h2 {
+      font-size: 16pt;
+      margin-bottom: 16px;
+      color: #1a1a2e;
+      border-bottom: 2px solid #e9ecef;
+      padding-bottom: 8px;
+    }
+    .category-label {
+      font-size: 12pt;
+      font-weight: 600;
+      color: #0f3460;
+      margin: 16px 0 8px 0;
+      padding: 6px 12px;
+      background: #e8edf2;
+      border-radius: 6px;
+      display: inline-block;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 9.5pt;
+      margin-bottom: 16px;
+    }
+    thead th {
+      background: #2c3e50;
+      color: #fff;
+      padding: 10px 8px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 8.5pt;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    thead th:first-child { border-radius: 6px 0 0 0; }
+    thead th:last-child { border-radius: 0 6px 0 0; }
+    tbody td {
+      padding: 8px;
+      border-bottom: 1px solid #e9ecef;
+    }
+    tbody tr:nth-child(even) { background: #f8f9fa; }
+    tbody tr:hover { background: #eef2f7; }
+    tbody tr.best-value-row { background: #e8f5e9 !important; }
+    tbody tr.price-alert-row { background: #fce4ec !important; }
+    .badge-inline {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 7.5pt;
+      font-weight: 600;
+      color: #fff;
+      margin-left: 4px;
+      vertical-align: middle;
+    }
+    .badge-best-overall { background: #f5a623; }
+    .badge-best-value { background: #27ae60; }
+    .badge-best-camera { background: #3498db; }
+    .badge-best-battery { background: #9b59b6; }
+    .badge-budget { background: #e67e22; }
+
+    .trend-up { color: #e74c3c; }
+    .trend-down { color: #27ae60; }
+    .trend-stable { color: #6c757d; }
+
+    .score-bar {
+      display: inline-block;
+      height: 8px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #27ae60, #f5a623);
+      vertical-align: middle;
+    }
+
+    /* Charts Section */
+    .charts-section {
+      margin-bottom: 28px;
+    }
+    .charts-section h2 {
+      font-size: 16pt;
+      margin-bottom: 16px;
+      color: #1a1a2e;
+      border-bottom: 2px solid #e9ecef;
+      padding-bottom: 8px;
+    }
+    .chart-container {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid #e9ecef;
+    }
+    .chart-container h3 {
+      font-size: 12pt;
+      margin-bottom: 12px;
+      color: #2c3e50;
+    }
+
+    /* Price Alerts */
+    .alerts-section {
+      margin-bottom: 28px;
+    }
+    .alerts-section h2 {
+      font-size: 16pt;
+      margin-bottom: 16px;
+      color: #e74c3c;
+      border-bottom: 2px solid #fce4ec;
+      padding-bottom: 8px;
+    }
+    .alert-card {
+      background: #fff;
+      border: 2px solid #e74c3c;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .alert-card .alert-gadget {
+      font-weight: 700;
+      font-size: 12pt;
+    }
+    .alert-card .alert-details {
+      font-size: 10pt;
+      color: #6c757d;
+    }
+    .alert-card .alert-savings {
+      font-size: 14pt;
+      font-weight: 700;
+      color: #27ae60;
+    }
+
+    /* Detail Cards */
+    .details-section {
+      margin-bottom: 28px;
+    }
+    .details-section h2 {
+      font-size: 16pt;
+      margin-bottom: 16px;
+      color: #1a1a2e;
+      border-bottom: 2px solid #e9ecef;
+      padding-bottom: 8px;
+    }
+    .detail-card {
+      background: #fff;
+      border: 1px solid #e9ecef;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 20px;
+    }
+    .detail-card .detail-info {
+      flex: 1;
+    }
+    .detail-card .detail-name {
+      font-size: 14pt;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin-bottom: 4px;
+    }
+    .detail-card .detail-brand {
+      font-size: 10pt;
+      color: #6c757d;
+      margin-bottom: 10px;
+    }
+    .detail-card .detail-specs {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .spec-chip {
+      background: #e8edf2;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 8.5pt;
+      color: #2c3e50;
+    }
+    .detail-card .pros-cons {
+      display: flex;
+      gap: 16px;
+    }
+    .pros-cons .pros, .pros-cons .cons {
+      flex: 1;
+    }
+    .pros li { color: #27ae60; font-size: 9pt; margin-bottom: 2px; }
+    .cons li { color: #e74c3c; font-size: 9pt; margin-bottom: 2px; }
+    .pros li span, .cons li span { color: #2c3e50; }
+
+    .detail-card .detail-price-section {
+      text-align: center;
+      min-width: 120px;
+    }
+    .detail-card .detail-price {
+      font-size: 20pt;
+      font-weight: 700;
+      color: #1a1a2e;
+    }
+    .detail-card .detail-score-label {
+      font-size: 8pt;
+      color: #6c757d;
+      text-transform: uppercase;
+      margin-top: 8px;
+    }
+    .detail-card .detail-score-value {
+      font-size: 16pt;
+      font-weight: 700;
+      color: #0f3460;
+    }
+
+    /* Footer */
+    .report-footer {
+      text-align: center;
+      padding: 20px;
+      color: #6c757d;
+      font-size: 9pt;
+      border-top: 1px solid #e9ecef;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="report-header">
+    <h1>{{REPORT_TITLE}}</h1>
+    <div class="subtitle">Comprehensive gadget analysis with pricing, specs, and recommendations</div>
+    <div class="meta">
+      <span>Generated: {{GENERATED_DATE}}</span>
+      <span>Gadgets: {{TOTAL_GADGETS}}</span>
+      <span>Categories: {{TOTAL_CATEGORIES}}</span>
+      <span>Currency: {{CURRENCY}}</span>
+    </div>
+  </div>
+
+  <!-- SUMMARY STATS -->
+  <div class="stats-bar">
+    {{STATS_CARDS}}
+  </div>
+
+  <!-- WINNER BADGES -->
+  <div class="winners-section">
+    <h2>Top Picks</h2>
+    <div class="winner-cards">
+      {{WINNER_CARDS}}
+    </div>
+  </div>
+
+  <!-- COMPARISON TABLE -->
+  <div class="comparison-section">
+    <h2>Full Comparison</h2>
+    {{COMPARISON_TABLES}}
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- CHARTS -->
+  <div class="charts-section">
+    <h2>Visual Analysis</h2>
+    <div class="chart-container">
+      <h3>Price Comparison</h3>
+      {{PRICE_BAR_CHART}}
+    </div>
+    <div class="chart-container">
+      <h3>Top 5 Spec Radar</h3>
+      {{RADAR_CHART}}
+    </div>
+  </div>
+
+  <!-- PRICE ALERTS -->
+  {{PRICE_ALERTS_SECTION}}
+
+  <div class="page-break"></div>
+
+  <!-- GADGET DETAIL CARDS -->
+  <div class="details-section">
+    <h2>Gadget Details</h2>
+    {{DETAIL_CARDS}}
+  </div>
+
+  <!-- FOOTER -->
+  <div class="report-footer">
+    <p>Report generated on {{GENERATED_DATE}} | Data sourced from user-provided Excel sheet</p>
+    <p>Generated by <strong>n8n Gadget Price Comparison Automation</strong></p>
+  </div>
+
+</body>
+</html>

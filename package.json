@@ -1,0 +1,12 @@
+{
+  "name": "n8n-gadget-automation",
+  "version": "1.0.0",
+  "description": "n8n workflow for gadget price comparison with PDF report and multi-channel delivery",
+  "scripts": {
+    "generate-sample": "node scripts/generate-sample-data.js"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5"
+  },
+  "license": "MIT"
+}
