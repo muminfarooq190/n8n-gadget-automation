@@ -28,27 +28,24 @@
     },
     {
       "parameters": {
-        "triggerOn": "specificFolder",
-        "path": "/data/gadgets/",
-        "event": "add",
-        "options": {
-          "extensions": ".xlsx"
-        }
+        "path": "gadget-report",
+        "responseMode": "lastNode",
+        "options": {}
       },
-      "id": "trigger-file",
-      "name": "File Trigger (Watch Folder)",
-      "type": "n8n-nodes-base.localFileTrigger",
-      "typeVersion": 1,
-      "position": [0, 740]
+      "id": "trigger-webhook",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 740],
+      "webhookId": "gadget-report-webhook"
     },
     {
       "parameters": {
-        "operation": "read",
-        "filePath": "={{ $json.filePath || '/data/gadgets/sample-gadgets.xlsx' }}"
+        "filePath": "C:\\Users\\uzayr\\n8n-gadget-automation\\data\\sample-gadgets.xlsx"
       },
       "id": "node-read-file",
       "name": "Read Excel File",
-      "type": "n8n-nodes-base.readWriteFile",
+      "type": "n8n-nodes-base.readBinaryFiles",
       "typeVersion": 1,
       "position": [280, 520]
     },
@@ -305,7 +302,7 @@
         [{ "node": "Read Excel File", "type": "main", "index": 0 }]
       ]
     },
-    "File Trigger (Watch Folder)": {
+    "Webhook Trigger": {
       "main": [
         [{ "node": "Read Excel File", "type": "main", "index": 0 }]
       ]
