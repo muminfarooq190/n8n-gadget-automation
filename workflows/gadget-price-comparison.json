@@ -41,11 +41,11 @@
     },
     {
       "parameters": {
-        "filePath": "C:\\Users\\uzayr\\n8n-gadget-automation\\data\\sample-gadgets.xlsx"
+        "filePath": "C:/Users/uzayr/n8n-gadget-automation/data/sample-gadgets.xlsx"
       },
       "id": "node-read-file",
       "name": "Read Excel File",
-      "type": "n8n-nodes-base.readBinaryFiles",
+      "type": "n8n-nodes-base.readBinaryFile",
       "typeVersion": 1,
       "position": [280, 520]
     },
