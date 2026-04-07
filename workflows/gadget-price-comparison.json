@@ -41,7 +41,7 @@
     },
     {
       "parameters": {
-        "filePath": "C:/Users/uzayr/n8n-gadget-automation/data/sample-gadgets.xlsx"
+        "filePath": "C:/Users/uzayr/.n8n-files/sample-gadgets.xlsx"
       },
       "id": "node-read-file",
       "name": "Read Excel File",
